@@ -118,7 +118,7 @@ td.l.wrap{white-space:normal}
 const P = __DATA__;
 const $=id=>document.getElementById(id), sum=a=>a.reduce((x,y)=>x+y,0);
 const fmt$=v=>(v<0?'-':'')+'$'+Math.abs(Math.round(v)).toLocaleString(), fmtN=v=>Math.round(v).toLocaleString(), fmtR=v=>'$'+v.toFixed(2);
-const D=P.donors, N=D.length, rate=P.rate, nt=P.new_truck;
+const D=P.donors, N=D.length, rate=P.rate, nt=P.new_truck, BD=255;
 document.querySelectorAll('.rate').forEach(e=>e.textContent='$'+rate.toFixed(2));
 document.querySelectorAll('.newt').forEach(e=>e.textContent=fmt$(nt));
 $('built').textContent=P.built;
@@ -139,19 +139,20 @@ function tbl(host,cols,rows,foot){
 }
 const odoTxt=(v,r)=>fmtN(v)+(r.odo_est?' <span class="pill e">est.</span>':'');
 tbl($('tDonor'),[
-  {k:'rank',n:'Rank',f:v=>'<b>#'+v+'</b>'},{k:'store',n:'Store',l:1,f:(v,r)=>r.name?v.padStart(3,'0')+' '+r.name:v},{k:'dist',n:'District',l:1},{k:'unit',n:'Unit',l:1},{k:'orig',n:'In service',l:1,f:v=>v.slice(0,7)},
-  {k:'odo',n:'Odometer',f:odoTxt},{k:'mi',n:'Miles YTD',f:fmtN},{k:'annmi',n:'Annual pace',f:fmtN},{k:'cpm',n:'All-in CPM',f:fmtR},
+  {k:'rank',n:'Rank',f:v=>'<b>#'+v+'</b>'},{k:'store',n:'Store',l:1,f:(v,r)=>r.name?v.padStart(3,'0')+' '+r.name:v},{k:'unit',n:'Unit',l:1},
+  {k:'odo',n:'Odometer',f:odoTxt},{k:'mi',n:'Miles YTD',f:fmtN},{k:'mpm',n:'Miles / month',f:fmtN},{k:'mpd',n:'Miles / bus. day',f:v=>v.toFixed(1)},{k:'annmi',n:'Annual pace',f:fmtN},{k:'cpm',n:'All-in CPM',f:fmtR},
   {k:'bill',n:'P&amp;L savings / yr',f:fmt$},{k:'ex',n:'Actual exp. / yr',f:fmt$},{k:'fuel',n:'Fuel stays',f:fmt$},{k:'nbv',n:'NBV 10/31',f:fmt$}
-], D.map(r=>({...r,bill:rate*12})).sort((a,b)=>a.rank-b.rank),
- {store:'Total — '+N+' stores',mi:sum(D.map(r=>r.mi)),annmi:sum(D.map(r=>r.annmi)),bill,ex,fuel,nbv,
+], D.map(r=>({...r,bill:rate*12,mpm:r.annmi/12,mpd:r.annmi/BD})).sort((a,b)=>a.rank-b.rank),
+ {store:'Total <span class="muted" style="font-weight:400">(miles: avg)</span>',mi:sum(D.map(r=>r.mi))/N,mpm:sum(D.map(r=>r.annmi))/12/N,mpd:sum(D.map(r=>r.annmi))/BD/N,annmi:undefined,bill,ex,fuel,nbv,
   rank:undefined,odo:undefined,cpm:undefined});
-const PL=D.slice().sort((a,b)=>a.odo-b.odo).map(r=>({...r,toS:r.to.store,toN:r.to.name,why:r.to.why,repl:r.to.repl,repl_o:r.to.repl_o,repl_odo:r.to.repl_odo,repl_annmi:r.to.repl_annmi,capex:nt}));
+const PL=D.slice().sort((a,b)=>a.odo-b.odo).map(r=>({...r,toS:r.to.store,toN:r.to.name,why:r.to.why,repl:r.to.repl,repl_o:r.to.repl_o,repl_odo:r.to.repl_odo,repl_annmi:r.to.repl_annmi,repl_mpm:r.to.repl_annmi?r.to.repl_annmi/12:null,repl_mpd:r.to.repl_annmi?r.to.repl_annmi/BD:null,capex:nt}));
 tbl($('tPlace'),[
   {k:'unit',n:'Truck',l:1},{k:'store',n:'From',l:1,f:(v,r)=>v.padStart(3,'0')+' '+r.name},{k:'odo',n:'Odometer',f:odoTxt},
   {k:'toS',n:'To',l:1,f:(v,r)=>'<span class="arrow">→</span>'+v.padStart(3,'0')+' '+r.toN},{k:'why',n:'Reason',l:1},
-  {k:'repl',n:'Replaces',l:1,f:v=>v||'—'},{k:'repl_odo',n:'Replaced truck odometer',f:v=>v?fmtN(v):'—'},{k:'repl_annmi',n:'Store annual miles',f:v=>v?fmtN(v):'New store'},{k:'capex',n:'CAPEX avoided',f:fmt$}
+  {k:'repl',n:'Replaces',l:1,f:v=>v||'—'},{k:'repl_odo',n:'Its odometer',f:v=>v?fmtN(v):'—'},{k:'repl_mpm',n:'Store miles / month',f:v=>v?fmtN(v):'New store'},{k:'repl_mpd',n:'Store miles / bus. day',f:v=>v?v.toFixed(1):'—'},{k:'capex',n:'CAPEX avoided',f:fmt$}
 ], PL, {unit:'Total',capex});
 $('notes').innerHTML=[
+  'Miles per month = Jan–Oct 2026 miles ÷ 10. Miles per business day = annual pace ÷ 255 business days (5-day week). Receiving-store figures use the pickup being replaced.',
   'Donor stores: the store pickups (stores 001–121) that rank in both the 15 lowest miles and the 15 highest all-in cost per mile for Jan–Oct 2026.',
   'Store P&amp;L savings use the flat pickup billing of $'+rate.toFixed(2)+' per store per month, annualized. This is a store-level saving; company-wide, the redeployed trucks keep depreciating at the receiving stores.',
   'Company savings are the '+fmt$(capex)+' of CAPEX avoided and the depreciation, registration and taxes of new trucks that are not bought. Sale proceeds from the replaced trucks are not included.',
