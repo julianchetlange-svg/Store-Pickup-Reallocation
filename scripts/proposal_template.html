@@ -104,14 +104,14 @@ td.l.wrap{white-space:normal}
 <main>
   <div class="card" style="border-left:5px solid var(--yellow)">
     <h2>Summary</h2>
-    <p class="lead">Thirteen stores have the worst combination of low miles and high cost per mile among store pickups in 2026. Removing those trucks ends each store's flat pickup billing, and redeploying them to the 2027 lifecycle replacements (including three at Millworks) plus the Region 1, 4 and 6 pickups avoids buying 13 new trucks. Canyon Lake, the new store, would still need a new truck.</p>
+    <p class="lead">Thirteen stores have the worst combination of low miles and high cost per mile among store pickups in 2026. Removing those trucks ends each store's flat pickup billing, and redeploying them to the 2027 lifecycle replacements (including three at Millworks) plus the Region 1, 4 and 6 pickups avoids buying 13 new trucks.</p>
     <div class="kpis" id="kpis"></div>
   </div>
   <div class="card"><h2>1 · Stores losing a pickup — store P&amp;L savings</h2>
     <div class="sub">P&amp;L savings = flat pickup billing of <span class="rate"></span>/month no longer charged to the store. Actual expense (depreciation, maintenance, registration &amp; taxes) is shown for reference.</div>
     <div class="tscroll" style="max-height:none" id="tDonor"></div></div>
   <div class="card"><h2>2 · Truck placement — CAPEX avoided</h2>
-    <div class="sub">Replacements are based on mileage: the lowest-odometer trucks go to the highest-usage receiving stores. Each placement avoids a <span class="newt"></span> delivered replacement pickup. Canyon Lake (new store) is shown as a new purchase; the Region 1 and Region 4 placements were specified by Fleet.</div>
+    <div class="sub">Replacements are based on mileage: the lowest-odometer trucks go to the highest-usage receiving stores. Each placement avoids a <span class="newt"></span> delivered replacement pickup. The Region 1, 4 and 6 placements were specified by Fleet.</div>
     <div class="tscroll" style="max-height:none" id="tPlace"></div></div>
   <div class="card notes"><h2>Assumptions &amp; notes</h2><ul id="notes"></ul></div>
 </main>
@@ -151,14 +151,14 @@ tbl($('tPlace'),[
   {k:'unit',n:'Truck',l:1},{k:'store',n:'From',l:1,f:(v,r)=>r.newbuy?'<span class="muted">'+fmt$(nt)+' delivered</span>':v.padStart(3,'0')+' '+r.name},{k:'odo',n:'Odometer',f:(v,r)=>r.newbuy?'—':odoTxt(v,r)},
   {k:'toS',n:'To',l:1,f:(v,r)=>'<span class="arrow">→</span>'+v.padStart(3,'0')+' '+r.toN},{k:'why',n:'Reason',l:1},
   {k:'repl',n:'Replaces',l:1,f:v=>v||'—'},{k:'repl_odo',n:'Its odometer',f:v=>v?fmtN(v):'—'},{k:'repl_mpm',n:'Store miles / month',f:v=>v?fmtN(v):'New store'},{k:'repl_mpd',n:'Store miles / bus. day',f:v=>v?v.toFixed(1):'—'},{k:'capex',n:'CAPEX avoided',f:(v,r)=>r.newbuy?'<span class="muted">$0 — buy new</span>':fmt$(v)}
-], PL.concat((P.unfilled||[]).map(u=>({unit:'<b>New purchase</b>',store:'',name:'',odo:null,toS:u.store,toN:u.name,why:u.why,repl:u.repl,repl_odo:u.repl_odo,repl_mpm:u.repl_annmi?u.repl_annmi/12:null,repl_mpd:u.repl_annmi?u.repl_annmi/BD:null,capex:0,newbuy:1}))), {unit:'Total',capex});
+], PL.concat((P.unfilled||[]).filter(u=>u.repl).map(u=>({unit:'<b>New purchase</b>',store:'',name:'',odo:null,toS:u.store,toN:u.name,why:u.why,repl:u.repl,repl_odo:u.repl_odo,repl_mpm:u.repl_annmi?u.repl_annmi/12:null,repl_mpd:u.repl_annmi?u.repl_annmi/BD:null,capex:0,newbuy:1}))), {unit:'Total',capex});
 $('notes').innerHTML=[
   'Miles per month = Jan–Oct 2026 miles ÷ 10. Miles per business day = annual pace ÷ 255 business days (5-day week). Receiving-store figures use the pickup being replaced.',
   'Donor stores: store pickups (stores 001–121) ranked by CPM rank + miles rank for Jan–Oct 2026 (lowest total = worst). The top 11 are the stores in both the 15 highest cost per mile and the 15 lowest miles; Laredo (#12) and Brazoria (#13) were added for two more replacements.',
   'Store P&amp;L savings use the flat pickup billing of $'+rate.toFixed(2)+' per store per month, annualized. This is a store-level saving; company-wide, the redeployed trucks keep depreciating at the receiving stores.',
   'Company savings are the '+fmt$(capex)+' of CAPEX avoided and the depreciation, registration and taxes of new trucks that are not bought. Sale proceeds from the replaced trucks are not included.',
   'Actual expense is Jan–Oct 2026 depreciation, standard maintenance ($0.14/mile), registration and taxes, annualized.',
-  'Placement follows mileage: trucks are ranked by odometer (lowest first) and matched to receiving stores ranked by their current pickup\'s annual miles (highest first). Brazoria 601009 → Region 4 (replaces 599002) and Laredo 601026 → Region 1 (replaces 600014) were assigned directly by Fleet. The Region 6 pickup 600013 (location 766) is placed just ahead of Canyon Lake. Canyon Lake has no history and is placed last; it gets a new $55,000 truck, which is not counted in the CAPEX avoided. Millworks (450) replaces three pickups: 599007, 599019 (in place of Okmulgee) and 599004 (in place of Liberty Hill).',
+  'Placement follows mileage: trucks are ranked by odometer (lowest first) and matched to receiving stores ranked by their current pickup\'s annual miles (highest first). Brazoria 601009 → Region 4 (replaces 599002) and Laredo 601026 → Region 1 (replaces 600014) were assigned directly by Fleet. The Region 6 pickup 600013 (location 766) is placed last, after the mileage-ranked stores. Millworks (450) replaces three pickups: 599007, 599019 (in place of Okmulgee) and 599004 (in place of Liberty Hill).',
   'All 13 redeployed trucks use GPS / Fleet odometer readings from 11/11/26. All replaced-truck odometers are GPS readings. Bryan (600008) and Odessa (600005) had unusable fuel-card readings — the Odessa card shows odometers from several vehicles, which also explains its high fuel cost per mile.'
 ].map(x=>'<li>'+x+'</li>').join('');
 </script>

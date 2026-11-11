@@ -1,4 +1,4 @@
-"""Pickup reallocation analysis: 11 underutilized store pickups -> lifecycle stores + Canyon Lake."""
+"""Pickup reallocation analysis: 13 underutilized store pickups -> 2027 lifecycle replacements."""
 import json, sys
 sys.path.insert(0, '.')
 from load import fuel
@@ -42,14 +42,14 @@ for s in donor_stores:
 
 # receiving stores, ordered by current annual miles (new store last)
 REC = [('450', '599007'), ('52', '599003'), ('63', '598008'), ('8', '596007'), ('450', '599004'), ('67', '600006'),
-       ('18', '596002'), ('53', '599025'), ('70', '597002'), ('450', '599019'), ('766', '600013'), ('122', None)]   # 599019 replaces Okmulgee 594179; 599004 replaces Liberty Hill 599030 (11/11/26)
+       ('18', '596002'), ('53', '599025'), ('70', '597002'), ('450', '599019'), ('766', '600013')]   # 599019 replaces Okmulgee 594179; 599004 replaces Liberty Hill 599030 (11/11/26)
 recs = []
 for s, ru in REC:
     r = A.get(ru) if ru else None
     o = (float(ODO_CONFIRMED[ru]) if ru in ODO_CONFIRMED else clean_odo(F, int(ru))[0]) if ru else None
     recs.append(dict(store=s, name=d['stores'].get(s, {}).get('name', 'Canyon Lake'), fixed=(ru == '600013'), repl=ru, repl_o=r['o'] if r else '',
                      repl_annmi=sum(r['mi']) / MONTHS * 12 if r else None, repl_odo=o, why='Fleet Lifecycle' if ru else 'Fleet Addition - New Store'))
-# rank by annual miles; 600013 (Region 6) placed just ahead of Canyon Lake per Fleet; Canyon Lake last
+# rank by annual miles; 600013 (Region 6) placed last per Fleet (Canyon Lake removed 11/11/26)
 recs = sorted([r for r in recs if r['repl'] and not r['fixed']], key=lambda r: -r['repl_annmi']) + [r for r in recs if r['fixed']] + [r for r in recs if not r['repl']]
 # lowest-mileage trucks go to the highest-usage receiving stores
 def rec_for(s, ru):
