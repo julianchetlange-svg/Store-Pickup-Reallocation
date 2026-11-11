@@ -17,12 +17,11 @@ cpm_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: -by[s][0] / by
 mi_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: by[s][1])
 donor_stores = [s for s in cpm_order[:15] if s in mi_order[:15]]
 
-ODO_CONFIRMED = {'600008': 30795, '600005': 39155, '598008': 147504, '601030': 5330}   # GPS / Fleet readings 11/11/26 (override fuel-card odometers)
+ODO_CONFIRMED = {'600008': 30795, '600005': 39155, '598008': 147504, '601030': 5330, '601039': 23499, '601036': 15094, '601025': 19828, '601037': 9231, '601008': 16519, '601048': 17395, '600001': 16476, '601031': 20177}   # GPS / Fleet readings 11/11/26 (override fuel-card odometers)
 def odo(unit, a):
     if unit in ODO_CONFIRMED: return dict(odo=float(ODO_CONFIRMED[unit]), odo_dt='2026-11-11', odo_est=False, odo_conf=True)
     o, dt = (None, None) if unit == '600005' else clean_odo(F, int(unit))   # Odessa card shows several vehicles' odometers
     if o: return dict(odo=o, odo_dt=dt, odo_est=False)
-    if unit == '601036': return dict(odo=14701.0, odo_dt='2026-08-10', odo_est=False)   # last valid reading; later entries are the unit #
     y, m = int(a['o'][:4]), int(a['o'][5:7]); yrs = ((2026 - y) * 12 + (10 - m)) / 12
     return dict(odo=round(sum(a['mi']) / MONTHS * 12 * yrs), odo_dt='', odo_est=True)
 
