@@ -17,7 +17,7 @@ cpm_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: -by[s][0] / by
 mi_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: by[s][1])
 donor_stores = [s for s in cpm_order[:15] if s in mi_order[:15]]
 
-ODO_CONFIRMED = {'600008': 30795, '600005': 39155}   # confirmed by Fleet 11/11/26
+ODO_CONFIRMED = {'600008': 30795, '600005': 39155, '598008': 147504}   # GPS / Fleet readings 11/11/26 (override fuel-card odometers)
 def odo(unit, a):
     if unit in ODO_CONFIRMED: return dict(odo=float(ODO_CONFIRMED[unit]), odo_dt='2026-11-11', odo_est=False, odo_conf=True)
     o, dt = (None, None) if unit == '600005' else clean_odo(F, int(unit))   # Odessa card shows several vehicles' odometers
@@ -42,7 +42,7 @@ REC = [('450', '599007'), ('52', '599003'), ('63', '598008'), ('8', '596007'), (
 recs = []
 for s, ru in REC:
     r = A.get(ru) if ru else None
-    o = clean_odo(F, int(ru))[0] if ru else None
+    o = (float(ODO_CONFIRMED[ru]) if ru in ODO_CONFIRMED else clean_odo(F, int(ru))[0]) if ru else None
     recs.append(dict(store=s, name=d['stores'].get(s, {}).get('name', 'Canyon Lake'), repl=ru, repl_o=r['o'] if r else '',
                      repl_annmi=sum(r['mi']) / MONTHS * 12 if r else None, repl_odo=o, why='Fleet Lifecycle' if ru else 'Fleet Addition - New Store'))
 recs.sort(key=lambda r: -(r['repl_annmi'] or -1))
