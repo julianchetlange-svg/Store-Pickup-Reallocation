@@ -130,7 +130,7 @@ $('kpis').innerHTML=[
   ['Annual store P&L savings',fmt$(bill),N+' stores × $'+rate.toFixed(2)+'/month × 12','y big'],
   ['Actual annual expense',fmt$(ex),'Depreciation, maintenance, registration & taxes on the '+N+' trucks','big'],
   ['New-truck depreciation not added',fmt$(depAv)+' / yr','plus '+fmt$(rtAv)+' / yr registration & taxes on new trucks',''],
-  ['Book value redeployed',fmt$(nbv),'Net book value of the '+N+' trucks at 10/31/26','']
+  ['Book value redeployed',fmt$(nbv),'Est. net book value of the '+N+' trucks at 10/31/26 (original cost less straight-line)','']
 ].map(([k,v,s,c])=>`<div class="tile ${c}"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
 function tbl(host,cols,rows,foot){
   let h='<table><thead><tr>'+cols.map(c=>`<th class="${c.l?'l':''}" title="${c.title||''}">${c.n}</th>`).join('')+'</tr></thead><tbody>';
@@ -157,7 +157,7 @@ $('notes').innerHTML=[
   'Donor stores: store pickups (stores 001–121) ranked by CPM rank + miles rank for Jan–Oct 2026 (lowest total = worst). The top 11 are the stores in both the 15 highest cost per mile and the 15 lowest miles; Laredo (#12) and Brazoria (#13) were added for two more replacements.',
   'Store P&amp;L savings use the flat pickup billing of $'+rate.toFixed(2)+' per store per month, annualized. This is a store-level saving; company-wide, the redeployed trucks keep depreciating at the receiving stores.',
   'Company savings are the '+fmt$(capex)+' of CAPEX avoided and the depreciation, registration and taxes of new trucks that are not bought. Sale proceeds from the replaced trucks are not included.',
-  'Actual expense is Jan–Oct 2026 depreciation, standard maintenance ($0.14/mile), registration and taxes, annualized.',
+  'Actual expense is Jan–Oct 2026 book depreciation (actual GAAP, October at the September amount), standard maintenance ($0.14/mile), registration and taxes, annualized. Net book value is estimated from original cost less straight-line, since the depreciation files carry monthly amounts, not NBV.',
   'Placement follows mileage: trucks are ranked by odometer (lowest first) and matched to receiving stores ranked by their current pickup\'s annual miles (highest first). Brazoria 601009 → Region 4 (replaces 599002) and Laredo 601026 → Region 1 (replaces 600014) were assigned directly by Fleet. The Region 6 pickup 600013 (location 766) is placed last, after the mileage-ranked stores. Millworks (450) replaces three pickups: 599007, 599019 (in place of Okmulgee) and 599004 (in place of Liberty Hill).',
   'All 13 redeployed trucks use GPS / Fleet odometer readings from 11/11/26. All replaced-truck odometers are GPS readings. Bryan (600008) and Odessa (600005) had unusable fuel-card readings — the Odessa card shows odometers from several vehicles, which also explains its high fuel cost per mile.'
 ].map(x=>'<li>'+x+'</li>').join('');

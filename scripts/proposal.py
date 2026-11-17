@@ -15,7 +15,7 @@ for a in d['assets']:
         g = by.setdefault(a['s'], [0, 0]); g[0] += sum(sum(a[c]) for c in C); g[1] += sum(a['mi'])
 cpm_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: -by[s][0] / by[s][1])
 mi_order = sorted([s for s in by if by[s][1] > 0], key=lambda s: by[s][1])
-donor_stores = [s for s in cpm_order[:15] if s in mi_order[:15]]
+donor_stores = ['34', '84', '35', '101', '96', '20', '97', '13', '57', '88', '85']   # the 11 selected 11/11/26 (top 15 CPM and bottom 15 miles at the time); pinned
 # combined rank = CPM rank + miles rank (lowest = worst); #12 Laredo and #13 Brazoria added 11/11/26
 combo = sorted(cpm_order, key=lambda s: (cpm_order.index(s) + mi_order.index(s), cpm_order.index(s)))
 donor_stores += ['41', '3']
